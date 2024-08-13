@@ -1,88 +1,54 @@
 "use client";
-import React, { useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import ProjectCard from "./project-card/ProjectCard";
+import React, { useState, useRef, useEffect } from "react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+// import ProjectCard from "./project-card/ProjectCard";
 import ProjectTag from "./project-tag/ProjectTag";
+import { projects } from "@/assets/data/project.data";
+import { Tag } from "@/components/ui/tag/Tag";
+import { ProjectCard } from "./new-card/ProjectCard";
 
-interface IProject {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  tag: string[];
-  gitUrl: string;
-  previewUrl: string;
+interface IChip {
+  [key: string]: number;
 }
-
-const projectsData: IProject[] = [
-  {
-    id: 1,
-    title: "React Portfolio Website",
-    description: "Project 1 description",
-    image: "/images/projects/1.png",
-    tag: ["All", "Web"],
-    gitUrl: "/",
-    previewUrl: "/",
-  },
-  {
-    id: 2,
-    title: "Potography Portfolio Website",
-    description: "Project 2 description",
-    image: "/images/projects/2.png",
-    tag: ["All", "Web"],
-    gitUrl: "/",
-    previewUrl: "/",
-  },
-  {
-    id: 3,
-    title: "E-commerce Application",
-    description: "Project 3 description",
-    image: "/images/projects/3.png",
-    tag: ["All", "Web"],
-    gitUrl: "/",
-    previewUrl: "/",
-  },
-  {
-    id: 4,
-    title: "Food Ordering Application",
-    description: "Project 4 description",
-    image: "/images/projects/4.png",
-    tag: ["All", "Mobile"],
-    gitUrl: "/",
-    previewUrl: "/",
-  },
-  {
-    id: 5,
-    title: "React Firebase Template",
-    description: "Authentication and CRUD operations",
-    image: "/images/projects/5.png",
-    tag: ["All", "Web"],
-    gitUrl: "/",
-    previewUrl: "/",
-  },
-  {
-    id: 6,
-    title: "Full-stack Roadmap",
-    description: "Project 5 description",
-    image: "/images/projects/6.png",
-    tag: ["All", "Web"],
-    gitUrl: "/",
-    previewUrl: "/",
-  },
-];
 
 const ProjectsSection = () => {
   const [tag, setTag] = useState("All");
+
+  const [active, setActive] = useState("All");
+  const [chips, setChips] = useState<IChip>({});
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    // Get all unique tags and their count
+    const tags: string[] = projects.map((item) => item.stack).flat();
+    const tagsCount = tags.reduce(
+      (tagsCount, tag) => {
+        tagsCount[tag] = (tagsCount[tag] || 0) + 1;
+        return tagsCount;
+      },
+      {} as Record<string, number>,
+    );
+
+    setChips(tagsCount);
+  }, []);
+
+  function handleTagClick(key: keyof IChip) {
+    setActive(key as string);
+  }
+  useEffect(() => {
+    setVisible(false);
+    const timer = setTimeout(() => {
+      setVisible(true);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [active]);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   const handleTagChange = (newTag: string) => {
     setTag(newTag);
   };
-
-  const filteredProjects = projectsData.filter((project) =>
-    project.tag.includes(tag),
-  );
 
   const cardVariants = {
     initial: { y: 50, opacity: 0 },
@@ -111,29 +77,50 @@ const ProjectsSection = () => {
           isSelected={tag === "Mobile"}
         />
       </div>
-      <ul
-        ref={ref}
-        className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12"
-      >
-        {filteredProjects.map((project, index) => (
-          <motion.li
-            key={index}
-            variants={cardVariants}
-            initial="initial"
-            animate={isInView ? "animate" : "initial"}
-            transition={{ duration: 0.3, delay: index * 0.4 }}
-          >
-            <ProjectCard
-              key={project.id}
-              title={project.title}
-              description={project.description}
-              imgUrl={project.image}
-              gitUrl={project.gitUrl}
-              previewUrl={project.previewUrl}
+      <div className="grid grid-cols-8 w-[1280px] mx-auto gap-4">
+        <Tag
+          active={active}
+          tag="All"
+          key={"All"}
+          handleTagClick={handleTagClick}
+          value={projects.length}
+        />
+        {Object.keys(chips).map((key: keyof IChip, index: number) => {
+          return (
+            <Tag
+              active={active}
+              key={key}
+              tag={String(key)}
+              value={chips[key]}
+              handleTagClick={handleTagClick}
             />
-          </motion.li>
-        ))}
-      </ul>
+          );
+        })}
+      </div>
+      <AnimatePresence>
+        {visible && (
+          <motion.div
+            className="grid grid-cols-3 gap-y-5 xl:w-[1280px] mx-auto py-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0 }}
+          >
+            {projects
+              .filter(
+                (project) => active === "All" || project.stack.includes(active),
+              )
+              .map((project) => {
+                return (
+                  <ProjectCard
+                    key={project.title + Math.random()}
+                    project={project}
+                  />
+                );
+              })}
+          </motion.div>
+        )}{" "}
+      </AnimatePresence>
     </section>
   );
 };
