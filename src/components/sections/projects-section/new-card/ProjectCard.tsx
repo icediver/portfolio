@@ -49,7 +49,7 @@ export function ProjectCard({
         <div className="group">
           <h1 className=" text-2xl mb-2.5 p-0">{title}</h1>
           <Image
-            src={"/assets/work/" + image}
+            src={image}
             alt={title}
             width={300}
             height={300}
