@@ -1,28 +1,33 @@
-import clsx from "clsx";
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 interface ITag {
-  handleTagClick: (key: string) => void;
-  active: string;
-  tag: string;
-  value: number;
+	handleTagClick: (key: string) => void;
+	active: string;
+	tag: string;
+	value: number;
 }
 
 export function Tag({ active, handleTagClick, tag, value }: ITag) {
-  return (
-    <div
-      className={clsx(
-        "flex items-center text-white/30 justify-center cursor-pointer bg-slate-500/30 rounded-2xl py-1 transition-colors",
-        {
-          "bg-slate-500/50 !text-white/60": active === tag,
-          "hover:bg-slate-500/50": active !== tag,
-        },
-      )}
-      onClick={() => handleTagClick(tag)}
-    >
-      <p>
-        {tag}
-        <span>: {value}</span>
-      </p>
-    </div>
-  );
+	return (
+		<motion.div
+			className={clsx(
+				'flex cursor-pointer items-center justify-center rounded-2xl bg-tag py-1 text-white/30 transition-colors',
+				{
+					'!bg-active-tag !text-white/60': active === tag,
+					'hover:bg-hover-tag': active !== tag,
+				}
+			)}
+			onClick={() => handleTagClick(tag)}
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.5 }}
+			exit={{ opacity: 0 }}
+		>
+			<p>
+				{tag}
+				<span>: {value}</span>
+			</p>
+		</motion.div>
+	);
 }
