@@ -43,15 +43,6 @@ export function useTags(works: IProject[]) {
 		setTags(tagsCount);
 	}, [projects]);
 
-	console.log(
-		categories,
-		activeCategory,
-		setActiveCategory,
-		tags,
-		activeTag,
-		setActiveTag
-	);
-
 	return {
 		categories,
 		activeCategory,
