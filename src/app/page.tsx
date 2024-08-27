@@ -9,6 +9,7 @@ import { ProjectsService } from '@/services/projects.services';
 async function getProjects() {
 	try {
 		const projects: IProject[] = await ProjectsService.getProjects();
+
 		return projects;
 	} catch (error) {
 		console.log(error);

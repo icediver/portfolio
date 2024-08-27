@@ -10,8 +10,6 @@ import { IProject } from '@/assets/data/project.data';
 const ProjectsSection = ({ projects }: { projects: IProject[] }) => {
 	const [visible, setVisible] = useState(true);
 
-	console.log(projects);
-
 	const {
 		categories,
 		activeCategory,
