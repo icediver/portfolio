@@ -2,12 +2,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
 import ProjectTag from './project-tag/ProjectTag';
-import { projects } from '@/assets/data/project.data';
 import { Tag } from '@/components/ui/tag/Tag';
 import { ProjectCard } from './new-card/ProjectCard';
 import { ITag, useTags } from '@/hooks/useTags';
+import { IProject } from '@/assets/data/project.data';
 
-const ProjectsSection = () => {
+const ProjectsSection = ({ projects }: { projects: IProject[] }) => {
 	const [visible, setVisible] = useState(true);
 
 	const {
